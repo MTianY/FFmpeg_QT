@@ -50,6 +50,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 INCLUDEPATH += /usr/local/Cellar/ffmpeg/4.3.2_1/include
 
 # 库文件路径 (链接库文件)
+# 默认链接动态库, 假设找不到动态库,则找静态库链接
+# 如果需要指定链接静态库, 则添加 -static 参数 (链接静态库后, 会增加包体积, 会将代码和静态库.a 一同合并成 Mach-O 文件. 链接动态库则包里面只有些函数的声明,会去寻找动态库调用)
+# LIBS += -L /usr/local/Cellar/ffmpeg/4.3.2_1/lib -static\
 LIBS += -L /usr/local/Cellar/ffmpeg/4.3.2_1/lib \
         -lavcodec \
         -lavdevice \
