@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFile>
+
 extern "C" {
   // 格式相关
   #include "libavformat/avformat.h"
@@ -58,4 +60,44 @@ void MainWindow::on_auidioButton_clicked()
   }
 
   qDebug() << ctx;
+
+  // 3. 采集数据
+
+  // 文件名
+  const char *fileName = "";
+  // 创建文件
+  QFile file(fileName);
+  // 打开文件
+  // WriteOnly 只写, 文件不存在则创建新的文件, 文件存在则清空文件内容
+  if (!file.open(QFile::WriteOnly)) {
+     qDebug() << "文件打开失败!" << fileName;
+     // 关闭设备
+     avformat_close_input(&ctx);
+  }
+
+
+  // 数据包
+  AVPacket pkt;
+  // 这只采集一次
+//  av_read_frame(ctx, &pkt);
+
+  // 暂定采集次数 50 次
+  int count = 50;
+
+  // 不断的采集数据
+  //0 if OK, < 0 on error or end of file. On error, pkt will be blank
+  // av_read_frame 等于 0 则表示采集成功
+  while (count-- > 0 &&  av_read_frame(ctx, &pkt) == 0) {
+      // 将采集的数据写入文件
+      file.write((const char *)pkt.data, pkt.size);
+    }
+
+  qDebug() << "采集数据大小" << pkt.size;
+
+  // 4. 释放资源
+  // 关闭文件
+  file.close();
+  // 关闭设备
+  avformat_close_input(&ctx);
+
 }
