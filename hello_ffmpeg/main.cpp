@@ -12,6 +12,7 @@ extern "C" {
 int main(int argc, char *argv[])
 {
 
+    // 打印 FFmpeg 版本
     qDebug() << av_version_info();
 
     QApplication a(argc, argv);

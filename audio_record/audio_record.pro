@@ -23,20 +23,17 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-# 头文件路径
-INCLUDEPATH += /usr/local/Cellar/ffmpeg/4.3.2_1/include
+win32 {
+   FFMPEG_HOME = ..
+}
 
-# 库文件路径 (链接库文件)
-# 默认链接动态库, 假设找不到动态库,则找静态库链接
-# 如果需要指定链接静态库, 则添加 -static 参数
-# LIBS += -L /usr/local/Cellar/ffmpeg/4.3.2_1/lib -static\
-LIBS += -L /usr/local/Cellar/ffmpeg/4.3.2_1/lib \
-        -lavcodec \
+macx {
+   FFMPEG_HOME = /usr/local/Cellar/ffmpeg/4.3.2_1
+}
+
+INCLUDEPATH += $${FFMPEG_HOME}/include
+
+LIBS += -L $${FFMPEG_HOME}/lib \
         -lavdevice \
-        -lavfilter \
         -lavformat \
-        -lavresample \
-        -lavutil \
-        -lpostproc \
-        -lswresample \
-        -lswscale
+        -lavutil
