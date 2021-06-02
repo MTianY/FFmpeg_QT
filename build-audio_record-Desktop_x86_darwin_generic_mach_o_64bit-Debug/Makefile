@@ -52,12 +52,17 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../audio_record/main.cpp \
-		../audio_record/mainwindow.cpp moc_mainwindow.cpp
-OBJECTS       = main.o \
+SOURCES       = ../audio_record/audiothread.cpp \
+		../audio_record/main.cpp \
+		../audio_record/mainwindow.cpp moc_audiothread.cpp \
+		moc_mainwindow.cpp
+OBJECTS       = audiothread.o \
+		main.o \
 		mainwindow.o \
+		moc_audiothread.o \
 		moc_mainwindow.o
-DIST          = /usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/spec_pre.prf \
+DIST          = ../audio_record/mac/Info.plist \
+		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/spec_pre.prf \
 		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/device_config.prf \
 		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/common/unix.conf \
 		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/common/mac.conf \
@@ -204,7 +209,9 @@ DIST          = /usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/spec_pre.pr
 		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/exceptions.prf \
 		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/yacc.prf \
 		/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/lex.prf \
-		../audio_record/audio_record.pro ../audio_record/mainwindow.h ../audio_record/main.cpp \
+		../audio_record/audio_record.pro ../audio_record/audiothread.h \
+		../audio_record/mainwindow.h ../audio_record/audiothread.cpp \
+		../audio_record/main.cpp \
 		../audio_record/mainwindow.cpp
 QMAKE_TARGET  = audio_record
 DESTDIR       = 
@@ -547,7 +554,7 @@ audio_record.app/Contents/Resources/empty.lproj:
 audio_record.app/Contents/Info.plist: 
 	@test -d audio_record.app/Contents || mkdir -p audio_record.app/Contents
 	@$(DEL_FILE) audio_record.app/Contents/Info.plist
-	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,\$${QMAKE_SHORT_VERSION},1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,\$${QMAKE_FULL_VERSION},1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" -e "s,@BUNDLEIDENTIFIER@,com.maty.audio-record,g" -e "s,\$${PRODUCT_BUNDLE_IDENTIFIER},com.maty.audio-record,g" -e "s,\$${MACOSX_DEPLOYMENT_TARGET},10.15,g" -e "s,\$${IPHONEOS_DEPLOYMENT_TARGET},,g" -e "s,\$${TVOS_DEPLOYMENT_TARGET},,g" -e "s,\$${WATCHOS_DEPLOYMENT_TARGET},,g" -e "s,\$${IOS_LAUNCH_SCREEN},LaunchScreen,g" -e "s,@ICON@,,g" -e "s,\$${ASSETCATALOG_COMPILER_APPICON_NAME},,g" -e "s,@EXECUTABLE@,audio_record,g" -e "s,@LIBRARY@,audio_record,g" -e "s,\$${EXECUTABLE_NAME},audio_record,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" /usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/macx-clang/Info.plist.app >audio_record.app/Contents/Info.plist
+	@sed -e "s,@SHORT_VERSION@,1.0,g" -e "s,\$${QMAKE_SHORT_VERSION},1.0,g" -e "s,@FULL_VERSION@,1.0.0,g" -e "s,\$${QMAKE_FULL_VERSION},1.0.0,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" -e "s,@BUNDLEIDENTIFIER@,com.maty.audio-record,g" -e "s,\$${PRODUCT_BUNDLE_IDENTIFIER},com.maty.audio-record,g" -e "s,\$${MACOSX_DEPLOYMENT_TARGET},10.15,g" -e "s,\$${IPHONEOS_DEPLOYMENT_TARGET},,g" -e "s,\$${TVOS_DEPLOYMENT_TARGET},,g" -e "s,\$${WATCHOS_DEPLOYMENT_TARGET},,g" -e "s,\$${IOS_LAUNCH_SCREEN},LaunchScreen,g" -e "s,@ICON@,,g" -e "s,\$${ASSETCATALOG_COMPILER_APPICON_NAME},,g" -e "s,@EXECUTABLE@,audio_record,g" -e "s,@LIBRARY@,audio_record,g" -e "s,\$${EXECUTABLE_NAME},audio_record,g" -e "s,@TYPEINFO@,????,g" -e "s,\$${QMAKE_PKGINFO_TYPEINFO},????,g" ../audio_record/mac/Info.plist >audio_record.app/Contents/Info.plist
 
 all: Makefile \
 		audio_record.app/Contents/PkgInfo \
@@ -561,8 +568,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../audio_record/mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../audio_record/main.cpp ../audio_record/mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../audio_record/audiothread.h ../audio_record/mainwindow.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../audio_record/audiothread.cpp ../audio_record/main.cpp ../audio_record/mainwindow.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../audio_record/mainwindow.ui $(DISTDIR)/
 
 
@@ -597,9 +604,16 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/data/dummy.cpp
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -pipe -stdlib=libc++ -g -std=gnu++1z $(EXPORT_ARCH_ARGS) -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.15 -Wall -Wextra -dM -E -o moc_predefs.h /usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_audiothread.cpp moc_mainwindow.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp
+	-$(DEL_FILE) moc_audiothread.cpp moc_mainwindow.cpp
+moc_audiothread.cpp: ../audio_record/audiothread.h \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/QThread \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/qthread.h \
+		moc_predefs.h \
+		/usr/local/Cellar/qt/6.0.2/bin/moc
+	/usr/local/Cellar/qt/6.0.2/bin/moc $(DEFINES) --include /Users/Maty/Desktop/FFmpeg_QT/build-audio_record-Desktop_x86_darwin_generic_mach_o_64bit-Debug/moc_predefs.h -I/usr/local/Cellar/qt/6.0.2/share/qt/mkspecs/macx-clang -I/Users/Maty/Desktop/FFmpeg_QT/audio_record -I/usr/local/Cellar/ffmpeg/4.3.2_1/include -I/usr/local/Cellar/qt/6.0.2/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/6.0.2/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers -I. -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/usr/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -F/usr/local/Cellar/qt/6.0.2/lib ../audio_record/audiothread.h -o moc_audiothread.cpp
+
 moc_mainwindow.cpp: ../audio_record/mainwindow.h \
 		/usr/local/Cellar/qt/6.0.2/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/6.0.2/lib/QtWidgets.framework/Headers/qmainwindow.h \
@@ -629,6 +643,44 @@ compiler_lex_clean:
 compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
+
+audiothread.o: ../audio_record/audiothread.cpp ../audio_record/audiothread.h \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/QThread \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/qthread.h \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/QFile \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/qfile.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavformat/avformat.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/avcodec.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/samplefmt.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/avutil.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/common.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/attributes.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/macros.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/version.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/avconfig.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/mem.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/error.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/rational.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/mathematics.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/intfloat.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/log.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/pixfmt.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/buffer.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/cpu.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/channel_layout.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/dict.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/frame.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/hwcontext.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/bsf.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec_id.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec_par.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/packet.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/version.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec_desc.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavformat/avio.h \
+		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavformat/version.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o audiothread.o ../audio_record/audiothread.cpp
 
 main.o: ../audio_record/main.cpp ../audio_record/mainwindow.h \
 		/usr/local/Cellar/qt/6.0.2/lib/QtWidgets.framework/Headers/QMainWindow \
@@ -675,38 +727,13 @@ mainwindow.o: ../audio_record/mainwindow.cpp ../audio_record/mainwindow.h \
 		/usr/local/Cellar/qt/6.0.2/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/6.0.2/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		ui_mainwindow.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavformat/avformat.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/avcodec.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/samplefmt.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/avutil.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/common.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/attributes.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/macros.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/version.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/avconfig.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/mem.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/error.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/rational.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/mathematics.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/intfloat.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/log.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/pixfmt.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/buffer.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/cpu.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/channel_layout.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/dict.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/frame.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavutil/hwcontext.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/bsf.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec_id.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec_par.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/packet.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/version.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavcodec/codec_desc.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavformat/avio.h \
-		/usr/local/Cellar/ffmpeg/4.3.2_1/include/libavformat/version.h
+		../audio_record/audiothread.h \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/QThread \
+		/usr/local/Cellar/qt/6.0.2/lib/QtCore.framework/Headers/qthread.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../audio_record/mainwindow.cpp
+
+moc_audiothread.o: moc_audiothread.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_audiothread.o moc_audiothread.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
